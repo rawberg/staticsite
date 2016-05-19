@@ -1,0 +1,17 @@
+{
+  "name": "staticsite",
+  "version": "0.99.0",
+  "description": "CLI tool to setup static sites on aws, rackpace, azure and google compute",
+  "main": "main.js",
+  "bin": {
+    "staticsite": "./main.js"
+  },
+  "author": "David Feinberg",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "argparse": "^1.0.7",
+    "aws-sdk": "^2.3.9",
+    "pkgcloud": "^1.3.0",
+    "walk": "^2.3.9"
+  }
+}
