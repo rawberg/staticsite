@@ -35,7 +35,7 @@ module.exports = function(parser) {
     parser.addArgument(["-d", "--directory"], {
         help: "    directory of site files to upload (simple defaults included)\n",
         metavar: "\b",
-        default: "./site_files",
+        default: "./default_site_files",
         required: false
     });
 

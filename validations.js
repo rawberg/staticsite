@@ -77,7 +77,7 @@ function rkpValidations(args) {
         }
     }
     if(directory === null || directory === "") {
-        args.directory = "./site_files";
+        args.directory = "./default_site_files";
     }
     directoryValidation(args.directory);
 }
