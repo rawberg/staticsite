@@ -45,8 +45,32 @@ function awsValidations(args) {
             process.exit(1);
         }
     }
-    if(directory === null || directory === "") {
+    if(args.directory === null || args.directory === "") {
         args.directory = "./site_files";
+    }
+    directoryValidation(args.directory);
+}
+
+function azureValidations(args) {
+    if(args.key === null || args.key === "") {
+        console.log("missing required azure api key");
+        process.exit(1);
+    }
+    if(args.user === null || args.user === "") {
+        console.log("missing required azure storage account name");
+        process.exit(1);
+    }
+    if(args.domain === null || args.domain === "") {
+        console.log("missing required azure container name");
+        process.exit(1);
+    }
+    else if(args.user.length < 3 || args.user.length > 63) {
+        console.log("container name must be between 3 and 63 characters")
+    }
+    args.domain = args.domain.replace(/[\W_]+/g, "");
+
+    if(args.directory === null || args.directory === "") {
+        args.directory = "./default_site_files";
     }
     directoryValidation(args.directory);
 }
@@ -76,7 +100,7 @@ function rkpValidations(args) {
             process.exit(1);
         }
     }
-    if(directory === null || directory === "") {
+    if(args.directory === null || args.directory === "") {
         args.directory = "./default_site_files";
     }
     directoryValidation(args.directory);
@@ -84,5 +108,6 @@ function rkpValidations(args) {
 
 module.exports = {
     awsValidations: awsValidations,
+    azureValidations: azureValidations,
     rkpValidations: rkpValidations
 };
