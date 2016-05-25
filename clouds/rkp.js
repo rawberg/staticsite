@@ -6,7 +6,7 @@ var fs = require('fs'),
 module.exports.createSite = function(options) {
     "use strict";
 
-    var required = ["user", "apiKey", "callback"];
+    var required = ["user", "apiKey", "domain", "callback"];
     for(let req of required) {
         if(typeof options[req] === "undefined" || options[req] === "") {
             throw("required " + req + ", not provided");
@@ -36,7 +36,6 @@ module.exports.createSite = function(options) {
                     if(root.length > options.directory.length) {
                         cloudPath = root.substr(options.directory.length + 1) + "/" + fileStat.name;
                     }
-                    console.log("cloudPath: ", cloudPath);
                     uploadTasks.push(new Promise((resolve, reject) => {
                         var writeStream = client.upload({
                             container: options.domain,
@@ -56,12 +55,15 @@ module.exports.createSite = function(options) {
                     next();
                 });
 
+                walker.on("end", function() {
+                    Promise.all(uploadTasks)
+                        .then(options.callback)
+                        .catch(function(error) { throw(error); });
+                });
+
             } catch(error) {
                 throw(error);
             }
-            Promise.all(uploadTasks)
-                .then(options.callback)
-                .catch(function(error) { throw(error); });
         }
     });
 };
