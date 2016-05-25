@@ -12,8 +12,7 @@ var usageExamples = "examples\n" +
     " -k aws-secret-key -p aws-secret-password -r us-west-2 " +
     "(defaults to us-east-1)\n Rackspace\n staticsite " +
     "rkp new-site.com -u rkp-username -k rkp-api-key\n" +
-    "Azure\n staticsite azure new-site.com -k azure-secret-key " +
-    "-p azure-secret-password";
+    "Azure\n staticsite azure new-site.com -u storage-account -k azure-api-key";
 
 
 var parser = new argparse.ArgumentParser({
@@ -57,16 +56,21 @@ switch(args.cloud) {
             region: args.region,
             domain: args.domain,
             directory: args.directory,
-            callback: function(error) {
-                if(error) {
-                    console.log("rkp error: ", error);
-                } else {
-                    console.log("successfully created " + args.domain + " on rackspace cloud.");
-                }
+            callback: function() {
+                console.log("successfully created " + args.domain + " on rackspace cloud.");
             }
         });
         break;
     case "azure":
-        console.log("azure is coming soon");
+        validations.azureValidations(args);
+        azure.createSite({
+            storageAccount: args.user,
+            apiKey: args.key,
+            domain: args.domain,
+            directory: args.directory,
+            callback: function() {
+                console.log("successfully created " + args.domain + " on azure cloud.");
+            }
+        });
         break;
 }

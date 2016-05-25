@@ -11,6 +11,7 @@
   "dependencies": {
     "argparse": "^1.0.7",
     "aws-sdk": "^2.3.9",
+    "azure-storage": "^0.10.0",
     "pkgcloud": "^1.3.0",
     "walk": "^2.3.9"
   }
