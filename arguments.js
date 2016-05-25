@@ -15,13 +15,13 @@ module.exports = function(parser) {
     });
 
     parser.addArgument(["-k", "--key"], {
-        help: "    aws: secret access key (required)\nrkp: api key (required)\nazure: secret azure thingy\n",
+        help: "    aws: secret access key (required)\nrkp: api key (required)\nazure: api key (required)\n",
         metavar: "\b",
         required: false
     });
 
     parser.addArgument(["-p", "--pass"], {
-        help: "    aws: secret password (required)\nrkp: not used\n",
+        help: "    aws: secret password (required)\nrkp: not used\nazure: note used\n",
         metavar: "\b",
         required: false
     });
