@@ -23,11 +23,13 @@ function awsValidations(args) {
         "us-west-1",
         "us-west-2",
         "eu-central-1",
+        "eu-west-1",
         "ap-northeast-1",
         "ap-northeast-2",
         "ap-southeast-1",
         "ap-southeast-2",
-        "sa-east-1"
+        "sa-east-1",
+        "cn-north-1"
     ];
 
     domainValidation(args.domain);
@@ -39,14 +41,16 @@ function awsValidations(args) {
         console.log("missing required aws password");
         process.exit(1);
     }
-    if(args.region !== null || args.region !== "") {
+    if(args.region !== null && args.region !== "") {
         if(awsRegions.indexOf(args.region) < 0) {
             console.log("invalid aws region, available regions: " + awsRegions.join(", "));
             process.exit(1);
         }
+    } else {
+        args.region = "us-east-1";
     }
     if(args.directory === null || args.directory === "") {
-        args.directory = "./site_files";
+        args.directory = "./default_site_files";
     }
     directoryValidation(args.directory);
 }

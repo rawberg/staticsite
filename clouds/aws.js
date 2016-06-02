@@ -1,4 +1,7 @@
-var AWS = require("aws-sdk");
+var AWS = require("aws-sdk"),
+    fs = require('fs'),
+    path = require('path'),
+    walk = require('walk');
 
 
 module.exports.createSite = function(options) {
@@ -20,92 +23,82 @@ module.exports.createSite = function(options) {
         throw("required callback not provided");
     }
 
+    if(typeof options.region === "undefined" || options.region === "") {
+        throw("required region not provided");
+    }
+
     var s3 = new AWS.S3({
         accessKeyId: options.awsKey,
         secretAccessKey: options.awsPass,
-        region: region,
+        region: options.region,
         sslEnabled: true
     });
 
-    var awsReqCreateBucket = s3.createBucket({
-        Bucket: req.body.bucketDomain,
-        ACL: "public-read",
-        CreateBucketConfiguration: {LocationConstraint: region}
-    });
+    s3.createBucket({
+        Bucket: options.domain,
+        ACL: "public-read"
+    }, function(error, data) {
+        if(error) {
+            throw(error);
+        } else {
+            try {
+                // TODO: be concerned if this fails
+                s3.putBucketWebsite({
+                    Bucket: options.domain,
+                    WebsiteConfiguration: {
+                        IndexDocument: {
+                            Suffix: "index.html"
+                        },
+                        ErrorDocument: {
+                            Key: "404.html"
+                        }
+                    }
+                }).send();
 
-    var awsReqPutWebsite = s3.putBucketWebsite({
-        Bucket: req.body.bucketDomain,
-        WebsiteConfiguration: {
-            IndexDocument: {
-                Suffix: "index.html"
-            },
-            ErrorDocument: {
-                Key: "404.html"
+                var uploadTasks = [];
+                var walker = walk.walk(options.directory, {followLinks: true});
+                walker.on("file", function(root, fileStat, next) {
+                    var cloudPath = fileStat.name;
+                    if(root.length > options.directory.length) {
+                        cloudPath = root.substr(options.directory.length + 1) + "/" + fileStat.name;
+                    }
+                    uploadTasks.push(new Promise((resolve, reject) => {
+                        s3.upload({
+                            ACL: "public-read",
+                            Body: fs.createReadStream(path.join(root, fileStat.name)),
+                            Bucket: options.domain,
+                            Key: cloudPath
+                        }, function(error, data) {
+                            if(error) {
+                                reject(error);
+                            } else {
+                                resolve(data);
+                            }
+                        });
+                    }));
+                    next();
+                });
+
+                walker.on("errors", function(root, nodeStatsArray, next) {
+                    nodeStatsArray.forEach(function (n) {
+                        throw(n.error.message || (n.error.code + ": " + n.error.path));
+                    });
+                    next();
+                });
+
+                walker.on("end", function() {
+                    Promise.all(uploadTasks)
+                        .then(options.callback)
+                        .catch(function(error) {
+                            throw(error);
+                        });
+                });
+
+            } catch (error) {
+                throw(error);
             }
         }
     });
-
-    var awsReqUploadIndex = s3.upload({
-        ACL: "public-read",
-        Body: bufferIndexhtml,
-        Bucket: req.body.bucketDomain,
-        Key: "index.html",
-        ContentType: "text/html"
-    });
-
-    var awsReqUpload404 = s3.upload({
-        ACL: "public-read",
-        Body: bufferErrorhtml,
-        Bucket: req.body.bucketDomain,
-        Key: "404.html",
-        ContentType: "text/html"
-    });
-
-    var errorResponse = function(error, response) {
-        console.log("error: ", error);
-        console.log("response: ", response);
-        res.sendStatus(502);
-        rollbar.handleError(error, response);
-    };
-
-    var successResponseBucketCreated = function() {
-        res.status(200).json({success: true});
-    };
-
-    awsReqPutWebsite.on("error", errorResponse);
-    awsReqCreateBucket.on("error", errorResponse);
-
-    var awsReqUpload404Callback = function(err, data) {
-        if(err) {
-            errorResponse(err);
-            return;
-        }
-        console.log("awsReqUpload404 succeeded");
-        console.log(data);
-        successResponseBucketCreated();
-    };
-
-    var awsReqUploadIndexCallback = function(err, data) {
-        if(err) {
-            errorResponse(err);
-            return;
-        }
-        console.log("awsReqUploadIndex succeeded");
-        console.log(data);
-        awsReqUpload404.send(awsReqUpload404Callback);
-    };
-
-    awsReqPutWebsite.on("success", function(response) {
-        console.log("awsReqPutWebsite succeeded");
-        awsReqUploadIndex.send(awsReqUploadIndexCallback);
-    });
-    awsReqCreateBucket.on("success", function(response) {
-        console.log("awsReqCreateBucket succeeded");
-        awsReqPutWebsite.send();
-    });
-
-    console.log("calling awsReqCreateBucket");
-    awsReqCreateBucket.send();
 };
 
 module.exports.listBuckets = function(options) {

@@ -37,14 +37,11 @@ switch(args.cloud) {
         aws.createSite({
             awsKey: args.key,
             awsPass: args.pass,
+            region: args.region,
             domain: args.domain,
             directory: args.directory,
-            callback: function(error, data) {
-                if(error) {
-                    console.log("aws error: ", error);
-                } else {
-                    console.log("successfully created " + args.domain + " on amazon web services cloud.");
-                }
+            callback: function() {
+                console.log("successfully created " + args.domain + " on amazon web services cloud.");
             }
         });
         break;
