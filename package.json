@@ -1,7 +1,7 @@
 {
   "name": "staticsite",
-  "version": "0.99.0",
-  "description": "CLI tool to setup static sites on aws, rackpace, azure and google compute",
+  "version": "1.0.0",
+  "description": "Sets up static site hosting on aws, rackpace, azure and google compute. Can be used as a CLI tool or node module.",
   "main": "main.js",
   "bin": {
     "staticsite": "./main.js"
