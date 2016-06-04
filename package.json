@@ -1,7 +1,10 @@
 {
   "name": "staticsite",
   "version": "1.0.0",
-  "description": "Sets up static site hosting on aws, rackpace, azure and google compute. Can be used as a CLI tool or node module.",
+  "description": "Sets up static site hosting on aws, rackpace and azure. Can be used as a CLI tool or node module.",
+  "repository": {
+    "url": "git+https://github.com/rawberg/staticsite.git"
+  },
   "main": "index.js",
   "bin": {
     "staticsite": "./main.js"
