@@ -1,4 +1,4 @@
-# Static Site - CLI to Set Up Static Hosting on AWS, Rackspace and Azure.
+# CLI to Set Up Static Hosting on AWS, Rackspace and Azure.
 Automates the process of creating a storage bucket and configuring it for static hosting across all the major cloud platforms. Uploads a local directory containing your site files.
 
 Can be used as a command line tool or programatically as a node module.
@@ -10,14 +10,14 @@ npm install staticsite -g
 ```
 
 ## CLI Usage
-To get started you just have to specify a cloud (aws, rkp, azure) along with a domain name you'd like to use and your authentication details for the cloud platform. If you don't specify a local directoy it uploads the contents of [default_site_files](default_site_files) which contains a simple hello world index.html file and 404.html.
+To get started you just have to specify a cloud (aws, rkp, azure) along with a domain name you'd like to use and your authentication details for the cloud platform. If you don't specify a local directoy it uploads the contents of [default_site_files](https://github.com/rawberg/staticsite/tree/master/default_site_files) which contains a simple hello world index.html file and 404.html.
 #### AWS Basic Example
 ```bash
-staticsite aws new-site.com -k aws-secret-key -p aws-secret-password (region default is us-east-1)
+staticsite aws new-site.com -k aws-secret-key -p aws-secret-password (us-east-1)
 ```
 #### AWS with Region and Local Directory Upload
 ```bash
-staticsite aws new-site.com -k aws-secret-key -p aws-secret-password -r us-west-2 -d ./path-to-local-site-files
+staticsite aws new-site.com -k aws-key -p aws-pass -r us-west-2 -d ./site-files
 ```
 
 #### Rackspace Basic Example
@@ -27,13 +27,13 @@ staticsite rkp new-site.com -u rkp-username -k rkp-api-key (region default is DF
 
 #### Rackspace with Region and Local Directory Upload
 ```bash
-staticsite rkp new-site.com -u rkp-username -k rkp-api-key -r IAD -d ./path-to-local-site-files
+staticsite rkp new-site.com -u rkp-user -k rkp-key -r IAD -d ./local-site-files
 ```
 
 #### Azure Example
 Please note: Azure currently [doesn't have the capability to specify a default file](https://feedback.azure.com/forums/217298-storage/suggestions/1180039-support-a-default-blob-for-blob-storage-containers) i.e. index.html so it's currently not an ideal solution for hosting traditional websites.
 ```bash
-staticsite azure new-site.com -u storage-account -k azure-api-key -d ./path-to-local-site-files
+staticsite azure new-site.com -u storage-account -k azure-key -d ./local-site-files
 ```
 
 #### Help Documentation & Complete List of Options
@@ -99,5 +99,5 @@ git checkout -b new-feature-branch
 ```
 
 ## License
-[GPLv3 License](gpl-3.0.txt)  
+[GPLv3 License](https://raw.githubusercontent.com/rawberg/staticsite/master/gpl-3.0.txt)  
 Copyright 2016 David Feinberg
